@@ -1,0 +1,135 @@
+## ams_version=1.0
+
+Model Main_GradeHoraria {
+	Procedure Procedure_1 {
+		Body: {
+			for ib in Dia_hora do
+				for ia in Codigo_disciplinas do
+					P_Tentativa(ia) | P_Disciplina_x_diahora(ia, ib) := val(ib);
+				endfor;
+			endfor;
+		}
+	}
+	DeclarationSection Variaveis {
+		Parameter P_DisponibilidadeDocente {
+			IndexDomain: (p, DH);
+			Range: binary;
+		}
+		Parameter P_Lim_max_CH {
+			Definition: 36;
+		}
+		Parameter P_Lim_min_CH {
+			Definition: 2;
+		}
+		Parameter P_Cargahoraria {
+			IndexDomain: DISC;
+		}
+		Set Professores {
+			Index: p;
+			Definition: {
+				{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19}
+			}
+		}
+		Set Codigo_disciplinas {
+			Index: DISC;
+			Definition: {
+				{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34}
+			}
+		}
+		Set Dia_hora {
+			Index: DH;
+			Definition: {
+				{11,12,21,22,31,32,41,42,51,52,61,62}
+			}
+		}
+		Parameter P_Tentativa {
+			IndexDomain: DISC;
+			Definition: {
+				!Quero retornar nesta funcao, no formato de vetor, quais são as disciplinas que ocorrem no mesmo dia e no mesmo horário
+			}
+		}
+		Parameter P_Disciplina_x_diahora {
+			IndexDomain: (DISC, DH);
+			Range: binary;
+		}
+	}
+	DeclarationSection Variaveis_auxiliares {
+		Parameter P_aux;
+		Index ib;
+		Index ia;
+	}
+	Section Restricoes {
+		Constraint Teste4 {
+			IndexDomain: p;
+			Definition: sum[DISC, P_Cargahoraria(DISC)*x(p, DISC)] <= P_Lim_max_CH;
+		}
+		Constraint Teste3 {
+			IndexDomain: p;
+			Definition: sum[DISC, P_Cargahoraria(DISC)*x(p, DISC)] >= P_Lim_min_CH;
+		}
+		Variable x {
+			IndexDomain: (p,DISC);
+			Range: binary;
+		}
+		Constraint Teste {
+			IndexDomain: p;
+			Definition: {
+				! Um professor é alocado somente a uma disciplina por horário
+				
+				sum[(DISC, DH) | P_Tentativa(DISC) = Val(DH), x(p, DISC)] = 1
+			}
+		}
+		Constraint Teste2 {
+			IndexDomain: DISC;
+			Definition: sum[p, x(p, DISC)] = 1;
+		}
+	}
+	Procedure MainInitialization {
+		Comment: "Add initialization statements here that do NOT require any library being initialized already.";
+	}
+	Procedure PostMainInitialization {
+		Comment: {
+			"Add initialization statements here that require that the libraries are already initialized properly,
+			or add statements that require the Data Management module to be initialized."
+		}
+	}
+	Procedure MainExecution;
+	Procedure PreMainTermination {
+		Body: {
+			return DataManagementExit();
+		}
+		Comment: {
+			"Add termination statements here that require all libraries to be still alive.
+			Return 1 if you allow the termination sequence to continue.
+			Return 0 if you want to cancel the termination sequence."
+		}
+	}
+	Procedure MainTermination {
+		Body: {
+			return 1;
+		}
+		Comment: {
+			"Add termination statements here that do not require all libraries to be still alive.
+			Return 1 to allow the termination sequence to continue.
+			Return 0 if you want to cancel the termination sequence.
+			It is recommended to only use the procedure PreMainTermination to cancel the termination sequence and let this procedure always return 1."
+		}
+	}
+	Section Quantities_and_Units {
+		Comment: {
+			"This section contains all the units and quantities that are added automatically by AIMMS.
+			It is recommended to declare all your quantities here."
+		}
+		Quantity SI_Time_Duration {
+			BaseUnit: s;
+			Conversions: minute->s : #-># * 60;
+			Comment: {
+				"Expresses the value for the duration of periods.
+				
+				The unit s has been added automatically because it is a required unit for AimmsWebUI.
+				
+				The unit minute has been added automatically because it is a required unit for AimmsWebUI."
+			}
+		}
+	}
+}
