@@ -11,6 +11,9 @@ Model Main_GradeHoraria {
 		}
 	}
 	DeclarationSection Variaveis {
+		Parameter P_Aderencia {
+			IndexDomain: (p,DISC);
+		}
 		Parameter P_DisponibilidadeDocente {
 			IndexDomain: (p, DH);
 			Range: binary;
@@ -67,10 +70,6 @@ Model Main_GradeHoraria {
 			IndexDomain: p;
 			Definition: sum[DISC, P_Cargahoraria(DISC)*x(p, DISC)] >= P_Lim_min_CH;
 		}
-		Variable x {
-			IndexDomain: (p,DISC);
-			Range: binary;
-		}
 		Constraint Teste {
 			IndexDomain: p;
 			Definition: {
@@ -82,6 +81,23 @@ Model Main_GradeHoraria {
 		Constraint Teste2 {
 			IndexDomain: DISC;
 			Definition: sum[p, x(p, DISC)] = 1;
+		}
+	}
+	Section Decisao {
+		Variable Qualidade_Ensino {
+			Range: free;
+			Definition: sum[(DISC, p), x(p, DISC)*P_Cargahoraria(DISC)*P_Aderencia(p,DISC)];
+		}
+		Variable x {
+			IndexDomain: (p,DISC);
+			Range: binary;
+		}
+		MathematicalProgram Qualidade {
+			Objective: Qualidade_Ensino;
+			Direction: maximize;
+			Constraints: AllConstraints;
+			Variables: AllVariables;
+			Type: Automatic;
 		}
 	}
 	Procedure MainInitialization {
