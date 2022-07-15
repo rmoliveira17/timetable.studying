@@ -2,3 +2,5 @@
 log/aimms.err
 log/messages.log
 *.bak
+log/messages.log
+log/aimms.err
