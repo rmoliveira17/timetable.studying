@@ -1,24 +1,45 @@
 ## ams_version=1.0
 
 Model Main_GradeHoraria {
-	Procedure Procedure_1 {
-		Body: {
-			for ib in Dia_hora do
-				for ia in Codigo_disciplinas do
-					P_Tentativa(ia) | P_Disciplina_x_diahora(ia, ib) := val(ib);
+	Section PreProcessamento {
+		Procedure Proc_preprocessing {
+			Body: {
+				Empty P_Professor_x_Disciplina, P_DISC_x_DH;
+				
+				for ia in Dia_hora do
+						P_DISC_x_DH(DISC) | P_Disciplina_x_diahora(DISC, ia) := val(ia);
+						P_Professor_x_Disciplina(p, DISC) | P_Professor_x_Disciplina(p, DISC) = 0 := P_DisponibilidadeDocente(p, ia) AND P_Disciplina_x_diahora(DISC, ia);
 				endfor;
-			endfor;
+			}
+		}
+		DeclarationSection Indices_auxiliares {
+			Index ia;
+		}
+		DeclarationSection Variaveis_Preprocessamento {
+			Parameter P_DISC_x_DH {
+				IndexDomain: DISC;
+			}
+			Parameter P_Professor_x_Disciplina {
+				IndexDomain: (p,DISC);
+				Range: binary;
+				Default: 0;
+			}
 		}
 	}
 	DeclarationSection Variaveis {
+		Parameter P_Aderencia {
+			IndexDomain: (p,DISC);
+		}
 		Parameter P_DisponibilidadeDocente {
 			IndexDomain: (p, DH);
 			Range: binary;
 		}
 		Parameter P_Lim_max_CH {
+			Text: "Máxima";
 			Definition: 36;
 		}
 		Parameter P_Lim_min_CH {
+			Text: "Mínima";
 			Definition: 2;
 		}
 		Parameter P_Cargahoraria {
@@ -42,46 +63,64 @@ Model Main_GradeHoraria {
 				{11,12,21,22,31,32,41,42,51,52,61,62}
 			}
 		}
-		Parameter P_Tentativa {
-			IndexDomain: DISC;
-			Definition: {
-				!Quero retornar nesta funcao, no formato de vetor, quais são as disciplinas que ocorrem no mesmo dia e no mesmo horário
-			}
-		}
 		Parameter P_Disciplina_x_diahora {
 			IndexDomain: (DISC, DH);
 			Range: binary;
 		}
 	}
-	DeclarationSection Variaveis_auxiliares {
-		Parameter P_aux;
-		Index ib;
-		Index ia;
-	}
 	Section Restricoes {
-		Constraint Teste4 {
-			IndexDomain: p;
-			Definition: sum[DISC, P_Cargahoraria(DISC)*x(p, DISC)] <= P_Lim_max_CH;
+		Constraint R_Teste {
+			IndexDomain: (p,DISC);
+			Definition: P_Professor_x_Disciplina(p,DISC) >= x(p,DISC);
 		}
-		Constraint Teste3 {
+		Constraint R_UmaDISCporPROF {
+			IndexDomain: DISC;
+			Definition: {
+				!Restricao - Somente uma disciplina é alocada por professor
+				
+				sum[p, x(p, DISC)] = 1
+			}
+		}
+		Constraint R_CargaHorariaMaxima {
 			IndexDomain: p;
-			Definition: sum[DISC, P_Cargahoraria(DISC)*x(p, DISC)] >= P_Lim_min_CH;
+			Definition: {
+				! Restricao - Carga Horaria Maxima
+				
+				sum[DISC, P_Cargahoraria(DISC)*x(p, DISC)] <= P_Lim_max_CH
+			}
+		}
+		Constraint R_CargaHorariaMinima {
+			IndexDomain: p;
+			Definition: {
+				!Restricao - Carga horaria Minima
+				
+				sum[DISC, P_Cargahoraria(DISC)*x(p, DISC)] >= P_Lim_min_CH
+			}
+		}
+		Constraint R_UmProfporDISC {
+			IndexDomain: p;
+			Definition: {
+				! Um professor é alocado somente a uma disciplina por horário
+				
+				sum[(DISC, DH) | P_DISC_x_DH(DISC) = Val(DH), x(p, DISC)] = 1
+			}
+		}
+	}
+	Section Decisao {
+		Variable Qualidade_Ensino {
+			Range: free;
+			Definition: sum[(DISC, p), x(p, DISC)*P_Cargahoraria(DISC)*P_Aderencia(p,DISC)];
 		}
 		Variable x {
 			IndexDomain: (p,DISC);
 			Range: binary;
 		}
-		Constraint Teste {
-			IndexDomain: p;
-			Definition: {
-				! Um professor é alocado somente a uma disciplina por horário
-				
-				sum[(DISC, DH) | P_Tentativa(DISC) = Val(DH), x(p, DISC)] = 1
-			}
-		}
-		Constraint Teste2 {
-			IndexDomain: DISC;
-			Definition: sum[p, x(p, DISC)] = 1;
+		MathematicalProgram Qualidade {
+			Objective: Qualidade_Ensino;
+			Direction: maximize;
+			Constraints: AllConstraints;
+			Variables: AllVariables;
+			Type: Automatic;
 		}
 	}
 	Procedure MainInitialization {

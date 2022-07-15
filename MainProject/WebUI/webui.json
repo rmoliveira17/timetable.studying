@@ -25,6 +25,39 @@
         ]
       }
     },
+    "pages": {
+      "literal": {
+        "name": "root",
+        "slug": "root",
+        "children": [
+          {
+            "name": "Main Project",
+            "slug": "main_project",
+            "children": [
+              {
+                "name": "Dados de Entrada",
+                "slug": "home",
+                "type": "pagev2-grid",
+                "children": [
+                  {
+                    "name": "Dados de Entrada",
+                    "type": "pagev2-grid",
+                    "slug": "cadastro_de_disciplinas",
+                    "children": []
+                  },
+                  {
+                    "name": "Preprocessamento",
+                    "type": "pagev2-grid",
+                    "slug": "preprocessamento",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
     "theme.classic": {
       "literal": "NOT_ALLOWED"
     },
@@ -41,20 +74,36 @@
           "webui::DefaultDSTSettingForDisplayTimeZone"
         ]
       }
+    },
+    "widget.visibility.greyout": {
+      "literal": true
     }
   },
-  "pages/home": {
+  "pages/cadastro_de_disciplinas": {
     "aimms.widget.type": {
       "literal": "pagev2-grid"
     },
     "bindings": {
       "literal": [
         {
+          "widgetUri": "Disponibilidade Docente",
+          "gridArea": "area-c",
+          "dndId": "Unassigned widgetsDisponibilidade Docente2"
+        },
+        {
+          "widgetUri": "Carga Horária",
+          "gridArea": "area-b",
+          "dndId": "area-bCarga Horária0"
+        },
+        {
           "widgetUri": "Disciplina vs Dia",
           "gridArea": "area-a",
-          "dndId": "Unassigned widgetsDisciplina vs Dia0"
+          "dndId": "area-aDisciplina vs Dia1"
         }
       ]
+    },
+    "layoutId": {
+      "literal": "Layout4"
     },
     "widgets": {
       "literal": [
@@ -64,8 +113,94 @@
             "width": "2",
             "height": "1"
           }
+        },
+        {
+          "uri": "Carga Horária",
+          "layoutInfo": {
+            "width": "2",
+            "height": "1"
+          }
+        },
+        {
+          "uri": "Disponibilidade Docente",
+          "layoutInfo": {
+            "width": "2",
+            "height": "1"
+          }
         }
       ]
+    }
+  },
+  "pages/home": {
+    "aimms.widget.type": {
+      "literal": "pagev2-grid"
+    },
+    "bindings": {
+      "literal": [
+        {
+          "widgetUri": "Carga Horária",
+          "gridArea": "area-b",
+          "dndId": "Unassigned widgetsCarga Horária1"
+        },
+        {
+          "widgetUri": "Disciplina vs Dia",
+          "gridArea": "area-a",
+          "dndId": "area-aDisciplina vs Dia0"
+        }
+      ]
+    },
+    "layoutId": {
+      "literal": "Layout1"
+    },
+    "widgets": {
+      "literal": []
+    }
+  },
+  "pages/preprocessamento": {
+    "aimms.widget.type": {
+      "literal": "pagev2-grid"
+    },
+    "bindings": {
+      "literal": [
+        {
+          "widgetUri": "Disciplina vs Dia-Hora",
+          "gridArea": "area-a",
+          "dndId": "Unassigned widgetsDisciplina vs Dia-Hora0"
+        }
+      ]
+    },
+    "layoutId": {
+      "literal": "Layout1"
+    },
+    "widgets": {
+      "literal": [
+        {
+          "uri": "Disciplina vs Dia-Hora",
+          "layoutInfo": {
+            "width": "2",
+            "height": "1"
+          }
+        }
+      ]
+    }
+  },
+  "widgets/Carga Horária": {
+    "aimms.widget.type": {
+      "literal": "scalar"
+    },
+    "contents": {
+      "aimms": {
+        "contents": [
+          "P_Lim_max_CH",
+          "P_Lim_min_CH"
+        ]
+      }
+    },
+    "name": {
+      "literal": "Carga Horária"
+    },
+    "title": {
+      "literal": "Limites - Carga horária"
     }
   },
   "widgets/Disciplina vs Dia": {
@@ -98,11 +233,102 @@
           "type": "rowHeader",
           "colKey": "<IDENTIFIER-SET>",
           "width": 36.57
+        },
+        {
+          "type": "rowHeader",
+          "colKey": "DISC",
+          "width": 29.79
         }
       ]
     },
     "name": {
-      "literal": "Disciplina vs Dia"
+      "literal": "Disciplina vs DH"
+    },
+    "title": {
+      "literal": "Disciplina vs. Dia-Horário"
+    }
+  },
+  "widgets/Disciplina vs Dia-Hora": {
+    "aimms.widget.type": {
+      "literal": "table"
+    },
+    "contents": {
+      "aimms": {
+        "contents": [
+          "P_Disciplina_x_diahora"
+        ]
+      }
+    },
+    "contents.partition": {
+      "literal": {
+        "rowHeader": [
+          "DH"
+        ],
+        "colHeader": [
+          "DISC"
+        ],
+        "aggregated": [
+          "<IDENTIFIER-SET>"
+        ]
+      }
+    },
+    "custom.column.widths": {
+      "literal": [
+        {
+          "type": "rowHeader",
+          "colKey": "DH",
+          "width": 28.69
+        }
+      ]
+    },
+    "hide.download.button": {
+      "literal": false
+    },
+    "name": {
+      "literal": "Disciplina vs Dia-Hora"
+    },
+    "title": {
+      "literal": "Disciplina vs Dia - Hora"
+    }
+  },
+  "widgets/Disponibilidade Docente": {
+    "aimms.widget.type": {
+      "literal": "table"
+    },
+    "contents": {
+      "aimms": {
+        "contents": [
+          "P_DisponibilidadeDocente"
+        ]
+      }
+    },
+    "contents.partition": {
+      "literal": {
+        "rowHeader": [
+          "p"
+        ],
+        "colHeader": [
+          "DH"
+        ],
+        "aggregated": [
+          "<IDENTIFIER-SET>"
+        ]
+      }
+    },
+    "custom.column.widths": {
+      "literal": [
+        {
+          "type": "rowHeader",
+          "colKey": "<IDENTIFIER-SET>",
+          "width": 13.03
+        }
+      ]
+    },
+    "name": {
+      "literal": "Disponibilidade Docente"
+    },
+    "title": {
+      "literal": "Disponibilidade Docente"
     }
   }
 }
