@@ -28,7 +28,8 @@ Model Main_GradeHoraria {
 	}
 	DeclarationSection Variaveis {
 		Parameter P_Aderencia {
-			IndexDomain: (p,DISC);
+			IndexDomain: (DISC, p);
+			Default: 0;
 		}
 		Parameter P_DisponibilidadeDocente {
 			IndexDomain: (p, DH);
@@ -109,7 +110,7 @@ Model Main_GradeHoraria {
 	Section Decisao {
 		Variable Qualidade_Ensino {
 			Range: free;
-			Definition: sum[(DISC, p), x(p, DISC)*P_Cargahoraria(DISC)*P_Aderencia(p,DISC)];
+			Definition: sum[(DISC, p), x(p, DISC)*P_Cargahoraria(DISC)*P_Aderencia(DISC, p)];
 		}
 		Variable x {
 			IndexDomain: (p,DISC);
