@@ -1,6 +1,5 @@
 
-log/aimms.err
-log/messages.log
+log/*.err
+log/*.log
 *.bak
-log/messages.log
-log/aimms.err
+
