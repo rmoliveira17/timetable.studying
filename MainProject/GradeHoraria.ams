@@ -79,7 +79,7 @@ Model Main_GradeHoraria {
 			Definition: {
 				!Restricao - Somente uma disciplina é alocada por professor
 				
-				sum[p, x(p, DISC)] = 1
+				sum[p, x(p, DISC)] <= 1
 			}
 		}
 		Constraint R_CargaHorariaMaxima {
@@ -103,7 +103,7 @@ Model Main_GradeHoraria {
 			Definition: {
 				! Um professor é alocado somente a uma disciplina por horário
 				
-				sum[(DISC, DH) | P_DISC_x_DH(DISC) = Val(DH), x(p, DISC)] = 1
+				sum[(DISC, DH) | P_DISC_x_DH(DISC) = Val(DH), x(p, DISC)] <= 1
 			}
 		}
 	}
