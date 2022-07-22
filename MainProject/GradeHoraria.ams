@@ -127,6 +127,8 @@ Model Main_GradeHoraria {
 	Procedure MainInitialization {
 		Body: {
 			Proc_preprocessing;
+			
+			MainExecution;
 		}
 		Comment: "Add initialization statements here that do NOT require any library being initialized already.";
 	}
