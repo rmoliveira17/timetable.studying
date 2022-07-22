@@ -3,3 +3,5 @@ log/*.err
 log/*.log
 *.bak
 
+/log/aimms.err
+/log/messages.log
