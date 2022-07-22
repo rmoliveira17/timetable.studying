@@ -125,6 +125,9 @@ Model Main_GradeHoraria {
 		}
 	}
 	Procedure MainInitialization {
+		Body: {
+			Proc_preprocessing;
+		}
 		Comment: "Add initialization statements here that do NOT require any library being initialized already.";
 	}
 	Procedure PostMainInitialization {
@@ -133,7 +136,11 @@ Model Main_GradeHoraria {
 			or add statements that require the Data Management module to be initialized."
 		}
 	}
-	Procedure MainExecution;
+	Procedure MainExecution {
+		Body: {
+			Solve Qualidade;
+		}
+	}
 	Procedure PreMainTermination {
 		Body: {
 			return DataManagementExit();
